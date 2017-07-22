@@ -1,59 +1,50 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import axios from 'axios';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import * as Actions from '../actions/index';
 
-export default class Curso extends Component {
+class Curso extends Component {
   // siempre va a poner esto !simpre¡
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      loading: true,
-      people: [],
-      species: [],
-      vehicles: []
-    };
+  handleClick = () => {
+    this.props.actions.incrementar();
   }
+
+  handleRestar = () => {
+    this.props.actions.decrementar();
+  }
+
+  handleMultiplicar = () => {
+    this.props.actions.multiplicar();
+  }
+
   //  puede ser para poner un loading
   componentWillMount() {
     console.log('me voy a montar');
   }
   // ejecuta el metodo cuando el componente termino de montarse, cuando quiero cargar un catalogo usamos este
   componentDidMount() {
+    this.props.actions.traerPersonas();
+    this.props.actions.traerEspecies();
+    this.props.actions.traerVehiculos();
     console.log('Ya quede');
-    axios.get('http://swapi.co/api/people')
-      .then(response => {
-        this.setState({
-          loading: false,
-          people: response.data.results
-        });
-        console.log(response.data.results);
-      });
-
-    axios.get('http://swapi.co/api/vehicles')
-      .then(response => {
-        this.setState({
-          loading: false,
-          vehicles: response.data.results
-        });
-        console.log(response.data.results);
-      });
-
-    axios.get('http://swapi.co/api/species')
-      .then(response => {
-        this.setState({
-          loading: false,
-          species: response.data.results
-        });
-        console.log(response.data.results);
-      });
+    
   }
   render() {
     return (
       <div className="container">
-        {this.state.loading ? 'Cargando...' : null}
+        <div>
+          <button style={{widht: '100px', background: 'black', color: 'white', marginLeft: '10px'}} onClick={this.handleClick}>SUMAR</button>
+          <button style={{widht: '100px', background: 'black', color: 'white', marginLeft: '10px'}} onClick={this.handleRestar}>RESTAR</button>
+          <button style={{widht: '100px', background: 'black', color: 'white', marginLeft: '10px'}} onClick={this.handleMultiplicar}>MULTIPLICAR X 2</button>
+          <h2>{this.props.numero}</h2>
+        </div>
+        {this.props.catalogos.error}
+        {this.props.catalogos.loading ? <img src="https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif" /> : null}
         <div className="container__people">
           <h2>Personas</h2>
-          {this.state.people.map((person, index) => {
+          {this.props.catalogos.personas.map((person, index) => {
             return (
               <ul key={index}>
                 <li>Nombre: {person.name}</li>
@@ -65,9 +56,11 @@ export default class Curso extends Component {
             );
           })}
         </div>
+        {this.props.catalogos.error}
+        {this.props.catalogos.loading ? <img src="https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif" /> : null}
         <div className="container__species">
           <h2>Especies</h2>
-          {this.state.species.map((itemSpecies, index) => {
+          {this.props.catalogos.especies.map((itemSpecies, index) => {
             return (
               <ul key={index}>
                 <li>Especie: {itemSpecies.name}</li>
@@ -79,9 +72,11 @@ export default class Curso extends Component {
             );
           })}
         </div>
+        {this.props.catalogos.error}
+        {this.props.catalogos.loading ? <img src="https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif" /> : null}
         <div className="container__vehicles">
           <h2>Vehiculos</h2>
-          {this.state.vehicles.map((itemVehicles, index) => {
+          {this.props.catalogos.vehiculos.map((itemVehicles, index) => {
             return (
               <ul key={index}>
                 <li>Nombre: {itemVehicles.name}</li>
@@ -97,3 +92,27 @@ export default class Curso extends Component {
     );
   }
 }
+
+Curso.propTypes = {
+  numero: PropTypes.number.isRequired,
+  catalogos: PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired
+};
+
+function mapStateToProps(state) {
+  return {
+    numero: state.numero,
+    catalogos: state.catalogos
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(Actions, dispatch)
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Curso);

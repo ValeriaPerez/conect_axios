@@ -1,25 +1,40 @@
-import * as types from '../constants/ActionTypes';
+import axios from 'axios';
 
-export function addTodo(text) {
-  return {type: types.ADD_TODO, text};
+export function incrementar() {
+  return {
+    type: 'INCREMENTAR'
+  };
 }
 
-export function deleteTodo(id) {
-  return {type: types.DELETE_TODO, id};
+export function decrementar() {
+  return {
+    type: 'DECREMENTAR'
+  };
 }
 
-export function editTodo(id, text) {
-  return {type: types.EDIT_TODO, id, text};
+export function multiplicar() {
+  return {
+    type: 'MULTIPLICAR'
+  };
 }
 
-export function completeTodo(id) {
-  return {type: types.COMPLETE_TODO, id};
+export function traerPersonas() {
+  return {
+    type: 'TRAER_PERSONAS',
+    payload: axios.get('http://swapi.co/api/people/')
+  };
 }
 
-export function completeAll() {
-  return {type: types.COMPLETE_ALL};
+export function traerEspecies() {
+  return {
+    type: 'TRAER_ESPECIES',
+    payload: axios.get('http://swapi.co/api/species')
+  };
 }
 
-export function clearCompleted() {
-  return {type: types.CLEAR_COMPLETED};
+export function traerVehiculos() {
+  return {
+    type: 'TRAER_VEHICULOS',
+    payload: axios.get('http://swapi.co/api/vehicles')
+  };
 }
